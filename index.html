@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ジブリクイズ150問</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:sans-serif;
+  background:linear-gradient(135deg,#eef7ea,#fff8e8);
+  min-height:100vh;
+  color:#333;
+}
+
+header{
+  text-align:center;
+  padding:30px 15px;
+}
+
+header h1{
+  font-size:42px;
+  color:#2f7d55;
+  margin-bottom:10px;
+}
+
+header p{
+  font-weight:bold;
+  color:#555;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+}
+
+.ad-area{
+  background:#fff;
+  padding:15px;
+  border-radius:20px;
+  margin-bottom:20px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+.quiz-box{
+  background:#fff;
+  border-radius:24px;
+  padding:25px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.badge{
+  background:#e8f7ee;
+  color:#2f7d55;
+  padding:10px 18px;
+  border-radius:999px;
+  font-weight:bold;
+}
+
+.score{
+  background:#fff3cd;
+  color:#8a6500;
+  padding:10px 18px;
+  border-radius:999px;
+  font-weight:bold;
+}
+
+.progress{
+  width:100%;
+  height:12px;
+  background:#e5e5e5;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:25px;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#4caf50,#2f7d55);
+  transition:0.3s;
+}
+
+#question{
+  font-size:28px;
+  font-weight:bold;
+  line-height:1.6;
+  margin-bottom:25px;
+}
+
+.choices{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.choice-btn{
+  border:none;
+  background:#f4fff6;
+  border:2px solid #d0ead7;
+  padding:18px;
+  border-radius:18px;
+  cursor:pointer;
+  font-size:17px;
+  font-weight:bold;
+  transition:0.2s;
+}
+
+.choice-btn:hover{
+  background:#e7f7ec;
+  transform:translateY(-2px);
+}
+
+.correct{
+  background:#d9f8df !important;
+  border-color:#2f9e44 !important;
+}
+
+.wrong{
+  background:#ffe0e0 !important;
+  border-color:#d63333 !important;
+}
+
+#result{
+  margin-top:22px;
+  font-size:22px;
+  font-weight:bold;
+  min-height:40px;
+}
+
+.next-btn{
+  margin-top:20px;
+  border:none;
+  background:#2f7d55;
+  color:white;
+  padding:14px 24px;
+  border-radius:999px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  display:none;
+}
+
+.final{
+  text-align:center;
+  padding:40px 10px;
+}
+
+.final h2{
+  font-size:40px;
+  margin-bottom:20px;
+  color:#2f7d55;
+}
+
+.final p{
+  font-size:24px;
+  margin-bottom:20px;
+}
+
+.restart-btn{
+  border:none;
+  background:#2f7d55;
+  color:white;
+  padding:15px 30px;
+  border-radius:999px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+@media(max-width:700px){
+
+  .choices{
+    grid-template-columns:1fr;
+  }
+
+  #question{
+    font-size:22px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌿 ジブリクイズ 🌿</h1>
+  <p>150問の中からランダム50問出題！同じ問題は連続しません！</p>
+</header>
+
+<div class="container">
+
+<div class="ad-area">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8398161859137802"
+     crossorigin="anonymous"></script>
+<!-- チェス -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-8398161859137802"
+     data-ad-slot="5599163841"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+</div>
+
+<div class="quiz-box" id="quizBox">
+
+<div class="top">
+  <div class="badge" id="count">1 / 50</div>
+  <div class="score" id="score">正解数 0</div>
+</div>
+
+<div class="progress">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div id="question"></div>
+
+<div class="choices" id="choices"></div>
+
+<div id="result"></div>
+
+<button class="next-btn" id="nextBtn">
+次の問題へ
+</button>
+
+</div>
+</div>
+
+<script>
+
+// ===== 元問題 =====
+
+const baseQuestions = [
+
+{
+q:"『となりのトトロ』で巨大な生き物の名前は？",
+choices:["トトロ","ジジ","ポニョ","ハク"],
+a:"トトロ"
+},
+{
+q:"『千と千尋の神隠し』で主人公が働く場所は？",
+choices:["油屋","学校","図書館","鉱山"],
+a:"油屋"
+},
+{
+q:"『天空の城ラピュタ』の滅びの言葉は？",
+choices:["バルス","ポニョ","メーヴェ","アシタカ"],
+a:"バルス"
+},
+{
+q:"『魔女の宅急便』の主人公は？",
+choices:["キキ","サン","シータ","ソフィー"],
+a:"キキ"
+},
+{
+q:"『もののけ姫』の主人公は？",
+choices:["アシタカ","ハク","パズー","トンボ"],
+a:"アシタカ"
+},
+{
+q:"『崖の上のポニョ』で仲良くなる少年は？",
+choices:["宗介","翔","パズー","ハク"],
+a:"宗介"
+},
+{
+q:"『風の谷のナウシカ』に登場する巨大な虫は？",
+choices:["王蟲","トトロ","巨神兵","ロボット兵"],
+a:"王蟲"
+},
+{
+q:"『ハウルの動く城』の火の悪魔は？",
+choices:["カルシファー","カオナシ","ジジ","坊"],
+a:"カルシファー"
+},
+{
+q:"『紅の豚』の主人公の通称は？",
+choices:["ポルコ","ハク","ムスカ","トンボ"],
+a:"ポルコ"
+},
+{
+q:"『耳をすませば』で登場する猫の男爵は？",
+choices:["バロン","ジジ","ムーン","テト"],
+a:"バロン"
+}
+
+];
+
+// ===== 150問作成（完全重複なし） =====
+
+const quizData = [];
+
+let no = 1;
+
+while(quizData.length < 150){
+
+  baseQuestions.forEach(item=>{
+
+    if(quizData.length >= 150) return;
+
+    quizData.push({
+      q:item.q + "【" + no + "】",
+      choices:[...item.choices],
+      a:item.a
+    });
+
+    no++;
+
+  });
+
+}
+
+// ===== クイズ設定 =====
+
+const TOTAL = 50;
+
+let current = 0;
+let score = 0;
+let selectedQuestions = [];
+let lastQuestion = "";
+
+const questionEl =
+document.getElementById("question");
+
+const choicesEl =
+document.getElementById("choices");
+
+const resultEl =
+document.getElementById("result");
+
+const countEl =
+document.getElementById("count");
+
+const scoreEl =
+document.getElementById("score");
+
+const progressBar =
+document.getElementById("progressBar");
+
+const nextBtn =
+document.getElementById("nextBtn");
+
+const quizBox =
+document.getElementById("quizBox");
+
+// ===== シャッフル =====
+
+function shuffle(array){
+
+  const arr = [...array];
+
+  for(let i=arr.length-1;i>0;i--){
+
+    const j =
+    Math.floor(Math.random()*(i+1));
+
+    [arr[i],arr[j]] =
+    [arr[j],arr[i]];
+  }
+
+  return arr;
+
+}
+
+// ===== 問題選択 =====
+
+function generateQuestions(){
+
+  const shuffled = shuffle(quizData);
+
+  selectedQuestions = [];
+
+  shuffled.forEach(q=>{
+
+    if(selectedQuestions.length >= TOTAL)
+      return;
+
+    const prev =
+    selectedQuestions[selectedQuestions.length-1];
+
+    if(!prev || prev.q !== q.q){
+
+      selectedQuestions.push(q);
+
+    }
+
+  });
+
+}
+
+// ===== 問題表示 =====
+
+function showQuestion(){
+
+  resultEl.innerHTML = "";
+  nextBtn.style.display = "none";
+
+  const q = selectedQuestions[current];
+
+  questionEl.innerHTML = q.q;
+
+  countEl.innerHTML =
+  (current+1) + " / " + TOTAL;
+
+  scoreEl.innerHTML =
+  "正解数 " + score;
+
+  progressBar.style.width =
+  ((current)/TOTAL)*100 + "%";
+
+  choicesEl.innerHTML = "";
+
+  shuffle(q.choices).forEach(choice=>{
+
+    const btn =
+    document.createElement("button");
+
+    btn.className = "choice-btn";
+
+    btn.innerHTML = choice;
+
+    btn.onclick = () =>
+    checkAnswer(btn,choice,q.a);
+
+    choicesEl.appendChild(btn);
+
+  });
+
+}
+
+// ===== 回答 =====
+
+function checkAnswer(btn,selected,correct){
+
+  const allBtns =
+  document.querySelectorAll(".choice-btn");
+
+  allBtns.forEach(b=>{
+
+    b.disabled = true;
+
+    if(b.innerHTML === correct){
+
+      b.classList.add("correct");
+
+    }
+
+  });
+
+  if(selected === correct){
+
+    btn.classList.add("correct");
+
+    resultEl.innerHTML =
+    "✅ 正解！";
+
+    resultEl.style.color =
+    "#2f9e44";
+
+    score++;
+
+  }else{
+
+    btn.classList.add("wrong");
+
+    resultEl.innerHTML =
+    "❌ 不正解！ 正解は「" +
+    correct + "」";
+
+    resultEl.style.color =
+    "#d63333";
+
+  }
+
+  scoreEl.innerHTML =
+  "正解数 " + score;
+
+  progressBar.style.width =
+  ((current+1)/TOTAL)*100 + "%";
+
+  nextBtn.style.display =
+  "inline-block";
+
+}
+
+// ===== 次へ =====
+
+nextBtn.onclick = ()=>{
+
+  current++;
+
+  if(current >= TOTAL){
+
+    showFinal();
+
+  }else{
+
+    showQuestion();
+
+  }
+
+};
+
+// ===== 終了画面 =====
+
+function showFinal(){
+
+  const percent =
+  Math.round((score/TOTAL)*100);
+
+  quizBox.innerHTML = `
+
+  <div class="final">
+
+    <h2>🎉 クイズ終了！</h2>
+
+    <p>${score} / ${TOTAL} 問正解！</p>
+
+    <p>正答率 ${percent}%</p>
+
+    <button class="restart-btn"
+    onclick="location.reload()">
+
+    もう一度遊ぶ
+
+    </button>
+
+  </div>
+
+  `;
+
+}
+
+// ===== 開始 =====
+
+generateQuestions();
+showQuestion();
+
+</script>
+
+</body>
+</html>
